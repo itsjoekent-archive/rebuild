@@ -96,8 +96,7 @@ async function updateGithubStatus(status, conclusion = null, message = null) {
 }
 
 new Promise((resolve, reject) => {
-  await updateGithubStatus(TEST_STATUS_IN_PROGRESS);
-  resolve();
+  updateGithubStatus(TEST_STATUS_IN_PROGRESS).then(resolve);
 })
   .then(copyDir)
   .then(installModules)
