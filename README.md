@@ -14,14 +14,22 @@ This function is deployed to AWS by [deploy-lambda-action](https://github.com/la
 
 # rebuild github actions
 
-Drop these Github actions into any SPA repositories workflow to get started.
+Drop these Github actions into any SPA repositories workflow to get started. If you're starting a new repository, create a workflow file at the following path in your project `.github/main.workflow`
 
 ## run-tests
 
 Checks if the attached repository has a `ci:test` command defined in its `package.json`. Updates the pull request with test results and posts a summary to Slack.
 
 ```
-Workflow TODO
+workflow "Test pushed commit" {
+  on = "push"
+  resolves = ["Test commit"]
+}
+
+action "Test commit" {
+  uses = "itsjoekent/rebuild/run-tests@master"
+  secrets = ["GITHUB_TOKEN"]
+}
 ```
 
 The following credentials are required,
