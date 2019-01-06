@@ -1,6 +1,10 @@
 FROM node:10-alpine
-WORKDIR /usr/src/app
-COPY package*.json ./
+
+ADD package.json /package.json
+ADD package-lock.json /package-lock.json
+WORKDIR /
+COPY . /
+
 RUN npm install
-COPY index.js .
-ENTRYPOINT node index.js
+
+ENTRYPOINT ["node", "/index.js"]

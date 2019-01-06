@@ -18,6 +18,8 @@ const TEST_CONCLUSION_FAILURE = 'failure';
 let checkId = null;
 
 async function copyDir() {
+  console.log('Copying files to test folder');
+
   const entries = await fsp.readdir(GITHUB_WORKSPACE, { withFileTypes: true });
   await fsp.mkdir(TEST_WORKSPACE);
 
@@ -34,12 +36,16 @@ async function copyDir() {
 }
 
 async function installModules() {
+  console.log('Installing modules');
+
   childProcess.execSync('npm install', {
     cwd: TEST_WORKSPACE,
   });
 }
 
 async function runTests() {
+  console.log('Running tests');
+
   const package = require(path.join(TEST_WORKSPACE, 'package.json'));
   const { scripts } = package;
 
@@ -53,6 +59,8 @@ async function runTests() {
 }
 
 async function updateGithubStatus(status, conclusion = null, message = null) {
+  console.log('Updating Github');
+
   const params = {
     ...tools.context.repo(),
     ...tools.context.issue(),
@@ -98,5 +106,5 @@ new Promise((resolve, reject) => {
   .catch(async (error) => {
     const message = `${error.message}\n${error.stack}`;
 
-    await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_FAILURE, message);
+    await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_FAILURE, message).catch(console.error);
   });
