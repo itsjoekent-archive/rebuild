@@ -101,7 +101,7 @@ new Promise((resolve, reject) => {
   .then(copyDir)
   .then(installModules)
   .then(runTests)
-  .then(() => await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_SUCCESS))
+  .then(() => updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_SUCCESS))
   .catch(async (error) => {
     const message = `${error.message}\n${error.stack}`;
 
