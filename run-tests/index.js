@@ -17,15 +17,13 @@ const TEST_CONCLUSION_FAILURE = 'failure';
 
 let checkId = null;
 
-async function copyDir() {
-  console.log('Copying files to test folder');
-
-  const entries = await fsp.readdir(GITHUB_WORKSPACE, { withFileTypes: true });
-  await fsp.mkdir(TEST_WORKSPACE);
+async function copyDir(srcDir, destDir) {
+  const entries = await fsp.readdir(srcDir, { withFileTypes: true });
+  await fsp.mkdir(destDir);
 
   for (let entry of entries) {
-    const srcPath = path.join(GITHUB_WORKSPACE, entry.name);
-    const destPath = path.join(TEST_WORKSPACE, entry.name);
+    const srcPath = path.join(srcDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
 
     if (entry.isDirectory()) {
       await copyDir(srcPath, destPath);
@@ -98,7 +96,10 @@ async function updateGithubStatus(status, conclusion = null, message = null) {
 new Promise((resolve, reject) => {
   updateGithubStatus(TEST_STATUS_IN_PROGRESS).then(resolve);
 })
-  .then(copyDir)
+  .then(() => {
+    console.log('Copying files to test folder');
+    return copyDir(GITHUB_WORKSPACE, TEST_WORKSPACE);
+  })
   .then(installModules)
   .then(runTests)
   .then(() => updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_SUCCESS))
