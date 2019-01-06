@@ -15,6 +15,8 @@ const TEST_STATUS_COMPLETED = 'completed';
 const TEST_CONCLUSION_SUCCESS = 'success';
 const TEST_CONCLUSION_FAILURE = 'failure';
 
+let checkId = null;
+
 async function copyDir() {
   const entries = await fsp.readdir(GITHUB_WORKSPACE, { withFileTypes: true });
   await fsp.mkdir(TEST_WORKSPACE);
@@ -66,6 +68,7 @@ async function updateGithubStatus(status, conclusion = null, message = null) {
   if (conclusion) {
     params.conclusion = conclusion;
     params.completed_at = new Date().toISOString();
+    params.check_run_id = checkId;
 
     if (message) {
       params.output = {
@@ -76,7 +79,12 @@ async function updateGithubStatus(status, conclusion = null, message = null) {
     }
   }
 
-  await octokit.checks.create(params);
+  if (! checkId) {
+    const result = await octokit.checks.create(params);
+    checkId = result.id;
+  } else {
+    await octokit.checks.update(params);
+  }
 }
 
 new Promise((resolve, reject) => {
