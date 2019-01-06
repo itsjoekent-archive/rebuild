@@ -7,7 +7,7 @@ const tools = new Toolkit();
 const octokit = tools.createOctokit();
 
 const GITHUB_WORKSPACE = process.env.GITHUB_WORKSPACE;
-const TEST_WORKSPACE = path.join(process.cwd(), '/rebuild-test');
+const TEST_WORKSPACE = '/usr/src/rebuild-test'
 
 const TEST_STATUS_IN_PROGRESS = 'in_progress';
 const TEST_STATUS_COMPLETED = 'completed';
