@@ -42,7 +42,7 @@ action "Test Container" {
 
 The following secrets are required after applying your workflow,
 
-- `INCOMING_SLACK` (Incoming Webhook URL for a Slack application)
+- `INCOMING_SLACK` _Optional_ (Incoming Webhook URL for a Slack application)
 
 Additionally, any environment variables configured in your workflow with the `REBUILD_` prefix will be written to an `.env` file in the container before the test process.
 
@@ -71,7 +71,7 @@ The following secrets are required after applying your workflow,
 - `STORAGE_ENDPOINT`
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
-- `INCOMING_SLACK` (Incoming Webhook URL for a Slack application)
+- `INCOMING_SLACK` _Optional_ (Incoming Webhook URL for a Slack application)
 - (_SOON_) `BUILD_DOMAIN`
 
 Additionally, any environment variables with the following naming prefixes will be written to an `.env` file before the build process for each environment.

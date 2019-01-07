@@ -95,6 +95,10 @@ async function updateGithubStatus(status, conclusion = null, message = null) {
 }
 
 async function postToSlack(message, color) {
+  if (! INCOMING_SLACK) {
+    return;
+  }
+
   const { number } = tools.context.issue();
 
   const {
@@ -115,13 +119,20 @@ async function postToSlack(message, color) {
   const title = `*${repoName} run-tests triggered by ${githubUserName}*`;
   const link = number ? `${repoUrl}/pulls/${number}` : `${repoUrl}/commit/${sha}`;
 
-  const payload = {
-    text: `${title}\n${message}\n${link}`,
-  };
+  const attachment = {
+    {
+      title,
+      text: `${message}\n${link}`,
+    },
+  }''
 
   if (color) {
-    payload.color = color;
+    attachment.color = color;
   }
+
+  const payload = {
+    attachments: [attachment],
+  };
 
   await request({
     uri: INCOMING_SLACK,
