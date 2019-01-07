@@ -116,7 +116,7 @@ async function postToSlack(message, color) {
     },
   } = tools;
 
-  const title = `*${repoName} run-tests triggered by ${githubUserName}*`;
+  const title = `${repoName} run-tests triggered by ${githubUserName}`;
   const link = number ? `${repoUrl}/pulls/${number}` : `${repoUrl}/commit/${sha}`;
 
   const attachment = {
