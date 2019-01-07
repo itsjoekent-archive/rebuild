@@ -54,7 +54,7 @@ async function uploadArtifactToS3(environment) {
           ACL: 'public-read',
         };
 
-        await s3.putObject(pageUploadParams).promise();
+        await s3.putObject(params).promise();
       } else if (stat.isDirectory()) {
         walkDirectory(filePath);
       }
