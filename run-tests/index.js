@@ -14,6 +14,8 @@ const TEST_STATUS_COMPLETED = 'completed';
 const TEST_CONCLUSION_SUCCESS = 'success';
 const TEST_CONCLUSION_FAILURE = 'failure';
 
+const ENVIRONMENTS_KEY_PREFIX = 'REBUILD_';
+
 let checkId = null;
 
 async function installModules() {
@@ -25,14 +27,28 @@ async function installModules() {
 }
 
 async function runTests() {
-  console.log('Running tests');
+  console.log('Running tests...');
+  console.log('- Locating application environment variables');
+
+  const envFileContent = Object.keys(process.env)
+    .filter(key => key.startsWith(ENVIRONMENTS_KEY_PREFIX))
+    .map(key => `${key.replace(ENVIRONMENTS_KEY_PREFIX, '')}=${process.env[key]}`)
+    .join('\n');
+
+  console.log('- Writing application environment variables to disk');
+
+  const envFilePath = path.join(GITHUB_WORKSPACE, '.env');
+  await fsp.writeFile(envFilePath, envFileContent);
 
   const package = require(path.join(GITHUB_WORKSPACE, 'package.json'));
   const { scripts } = package;
 
   if (! scripts || ! scripts['ci:test']) {
+    console.log('No ci:test command defined, exiting early.')
     return;
   }
+
+  console.log('- Running test suite');
 
   childProcess.execSync(scripts['ci:test'], {
     cwd: GITHUB_WORKSPACE,

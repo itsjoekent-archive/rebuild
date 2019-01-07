@@ -6,7 +6,7 @@ Set of Github actions to test & deploy SPA's to S3, update Cloudflare K/V storag
 
 **rebuild** as a project is only concerned with creating a new immutable static deployment in cloud object storage for every commit. To point your deployments at a domain or subdomain, use [to be named](...).
 
-# rebuild slack commands
+# rebuild slack commands (coming soon!)
 
 **rebuild** contains an AWS Lambda function that is invoked by the following Slack command, `/rebuild <deployment-link>`
 
@@ -21,20 +21,23 @@ Drop these Github actions into any SPA repositories workflow to get started. If 
 Checks if the attached repository has a `ci:test` command defined in its `package.json`. Updates the pull request with test results and posts a summary to Slack.
 
 ```
-workflow "Test pushed commit" {
+workflow "Test most recent commit" {
   on = "push"
-  resolves = ["Test commit"]
+  resolves = ["Test Container"]
 }
 
-action "Test commit" {
+action "Test Container" {
   uses = "itsjoekent/rebuild/run-tests@master"
-  secrets = ["GITHUB_TOKEN"]
+  secrets = [
+    "GITHUB_TOKEN",
+    "SLACK_WEBHOOK_URL",
+  ]
 }
 ```
 
-The following credentials are required,
+**NOTE**: Slack notifications are WIP.
 
-- TODO...
+Additionally, any environment variables with the `REBUILD_` prefix will be written to an `.env` file before the test process.
 
 ## ship-it
 
@@ -48,10 +51,8 @@ The following credentials are required,
 
 - TODO...
 
-Additionally, any secrets with the following naming prefixes will be written to an `.env` file before the build process for each environment.
+Additionally, any environment variables with the following naming prefixes will be written to an `.env` file before the build process for each environment.
 
 - `REBUILD_${YOUR_KEY_HERE}`. Applies to both both staging & production builds.
 - `REBUILD_STAGING_${YOUR_KEY_HERE}`. Applies to staging builds only.
 - `REBUILD_PRODUCTION_${YOUR_KEY_HERE}`. Applies to production builds only.
-
-Due to Github actions, there is a cap of 100 secrets.
