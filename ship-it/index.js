@@ -53,7 +53,7 @@ async function uploadArtifactToS3(environment) {
 
         const params = {
           Bucket: bucketName,
-          Key: filePath,
+          Key: key,
           Body: fs.readFileSync(filePath),
           ACL: 'public-read',
         };
