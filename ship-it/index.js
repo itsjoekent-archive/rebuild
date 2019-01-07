@@ -1,4 +1,5 @@
-const { promises: fsp } = require('fs');
+const fs = require('fs');
+const { promises: fsp } = fs;
 const path = require('path');
 const childProcess = require('child_process');
 
@@ -39,6 +40,7 @@ async function uploadArtifactToS3(environment) {
 
   const buildDirectory = path.join(GITHUB_WORKSPACE, '/build');
 
+  // TODO Promisify this.
   function walkDirectory(directory) {
     fs.readdirSync(directory).forEach(async (name) => {
       const filePath = path.join(directory, name);
