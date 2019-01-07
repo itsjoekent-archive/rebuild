@@ -32,7 +32,7 @@ async function installModules() {
 
 async function uploadArtifactToS3(environment) {
   console.log('- Uploading files to S3');
-  const { context: { sha }, payload: { repository: { name } } } = tools;
+  const { context: { sha, payload: { repository: { name } } } } = tools;
 
   const environmentName = environment === STAGING_ENVIRONMENT ? 'staging' : 'prod';
   const bucketName = `${name}-${sha}-${environmentName}`;
