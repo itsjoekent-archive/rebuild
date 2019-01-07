@@ -133,7 +133,7 @@ new Promise((resolve) => installModules().then(resolve))
     const stagingUrl = await build(STAGING_ENVIRONMENT);
     const productionUrl = await build(PRODUCTION_ENVIRONMENT);
 
-    const comment = `## Deployment\n${stagingUrl}\n${productionUrl}`;
+    const comment = `## Deployments\n[Staging](${stagingUrl})\n[Production](${productionUrl})`;
 
     await postComment(comment);
   })
