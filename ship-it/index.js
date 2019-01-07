@@ -49,6 +49,8 @@ async function uploadArtifactToS3(environment) {
       const stat = fs.statSync(filePath);
 
       if (stat.isFile()) {
+        const key = filePath.replace(GITHUB_WORKSPACE, '');
+
         const params = {
           Bucket: bucketName,
           Key: filePath,
