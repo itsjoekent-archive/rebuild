@@ -120,11 +120,9 @@ async function postToSlack(message, color) {
   const link = number ? `${repoUrl}/pulls/${number}` : `${repoUrl}/commit/${sha}`;
 
   const attachment = {
-    {
-      title,
-      text: `${message}\n${link}`,
-    },
-  }''
+    title,
+    text: `${message}\n${link}`,
+  };
 
   if (color) {
     attachment.color = color;
