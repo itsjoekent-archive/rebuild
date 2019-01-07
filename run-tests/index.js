@@ -2,11 +2,13 @@ const { promises: fsp } = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
 
+const request = require('request-promise-native');
 const { Toolkit } = require('actions-toolkit');
 const tools = new Toolkit();
 const octokit = tools.createOctokit();
 
 const GITHUB_WORKSPACE = process.env.GITHUB_WORKSPACE;
+const INCOMING_SLACK = process.env.INCOMING_SLACK;
 
 const TEST_STATUS_IN_PROGRESS = 'in_progress';
 const TEST_STATUS_COMPLETED = 'completed';
@@ -92,16 +94,57 @@ async function updateGithubStatus(status, conclusion = null, message = null) {
   }
 }
 
-new Promise((resolve, reject) => {
-  updateGithubStatus(TEST_STATUS_IN_PROGRESS).then(resolve);
-})
-  .then(installModules)
-  .then(runTests)
-  .then(() => updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_SUCCESS))
-  .catch(async (error) => {
-    const message = `${error.message}\n${error.stack}`;
+async function postToSlack(message, color) {
+  const { number } = tools.context.issue();
 
-    await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_FAILURE, message).catch(console.error);
+  const {
+    context: {
+      sha,
+      payload: {
+        repository: {
+          full_name: repoName,
+          html_url: repoUrl,
+        },
+        pusher: {
+          name: githubUserName,
+        },
+      },
+    },
+  } = tools;
 
-    process.exit(1);
+  const title = `*${repoName} run-tests triggered by ${githubUserName}*`;
+  const link = number ? `${repoUrl}/pulls/${number}` : `${repoUrl}/commit/${sha}`;
+
+  const payload = {
+    text: `${title}\n${message}\n${link}`,
+  };
+
+  if (color) {
+    payload.color = color;
+  }
+
+  await request({
+    uri: INCOMING_SLACK,
+    method: 'POST',
+    body: payload,
+    json: true,
   });
+}
+
+(async () => {
+  await updateGithubStatus(TEST_STATUS_IN_PROGRESS);
+  await postToSlack(`Test suite started.`, '#FFDC00');
+  await installModules();
+  await runTests();
+  await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_SUCCESS);
+  await postToSlack('Test suite completed.', '#01FF70');
+})().catch((error) => {
+  console.error(error);
+
+  const message = `${error.message}\n${error.stack}`;
+
+  await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_FAILURE, message).catch(console.error);
+  await postToSlack('Test suite failed.', '#FF4136').catch(console.error);
+
+  process.exit(1);
+});
