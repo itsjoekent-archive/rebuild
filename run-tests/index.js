@@ -138,7 +138,7 @@ async function postToSlack(message, color) {
   await runTests();
   await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_SUCCESS);
   await postToSlack('Test suite completed.', '#01FF70');
-})().catch((error) => {
+})().catch(async (error) => {
   console.error(error);
 
   const message = `${error.message}\n${error.stack}`;
