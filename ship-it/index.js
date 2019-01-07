@@ -51,7 +51,7 @@ async function build(environment) {
   const envFilePath = path.join(GITHUB_WORKSPACE, '.env');
 
   console.log('- Writing application environment variables to disk');
-  
+
   await fsp.writeFile(envFilePath, envFileContent);
 
   console.log('- Building src');
@@ -84,7 +84,7 @@ async function postComment(comment) {
 }
 
 new Promise((resolve) => installModules().then(resolve))
-  .then(() => {
+  .then(async () => {
     const stagingUrl = await build(STAGING_ENVIRONMENT);
     const productionUrl = await build(PRODUCTION_ENVIRONMENT);
 
