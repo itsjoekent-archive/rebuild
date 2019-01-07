@@ -38,6 +38,8 @@ async function uploadArtifactToS3(environment) {
   const environmentName = environment === STAGING_ENVIRONMENT ? 'staging' : 'prod';
   const bucketName = `${name}-${sha}-${environmentName}`;
 
+  await s3.createBucket({ Bucket: bucketName }).promise();
+
   const buildDirectory = path.join(GITHUB_WORKSPACE, '/build');
 
   // TODO Promisify this.
@@ -63,7 +65,7 @@ async function uploadArtifactToS3(environment) {
 
   walkDirectory(buildDirectory);
 
-  return `${bucketName}.${STORAGE_ENDPOINT}`;
+  return `https://${bucketName}.${STORAGE_ENDPOINT}`;
 }
 
 async function build(environment) {
