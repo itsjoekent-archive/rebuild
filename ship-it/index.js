@@ -72,15 +72,14 @@ async function build(environment) {
 }
 
 async function postComment(comment) {
-  const event = tools.context.payload;
-  const pullRequestNumber = event.pull_request.number;
+  const { context: { sha } } = tools.context.event;
 
   const params = tools.context.repo({
-    number: pullRequestNumber,
-    body: comment
+    sha,
+    body: comment,
   });
 
-  octokit.issues.createComment(params);
+  octokit.repos.createCommitComment(params);
 }
 
 new Promise((resolve) => installModules().then(resolve))
