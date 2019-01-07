@@ -72,7 +72,7 @@ async function build(environment) {
 }
 
 async function postComment(comment) {
-  const { context: { sha } } = tools.context.event;
+  const { context: { sha } } = tools;
 
   const params = tools.context.repo({
     sha,
