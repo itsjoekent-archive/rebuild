@@ -2,12 +2,12 @@ const { promises: fsp } = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
 
+const aws = require('aws-sdk');
 const { Toolkit } = require('actions-toolkit');
-const tools = new Toolkit();
-const octokit = tools.createOctokit();
 
 const GITHUB_WORKSPACE = process.env.GITHUB_WORKSPACE;
 const BUILD_DOMAIN = process.env.BUILD_DOMAIN;
+const STORAGE_ENDPOINT = process.env.STORAGE_ENDPOINT;
 
 const STAGING_ENVIRONMENT = 'STAGING_ENVIRONMENT';
 const PRODUCTION_ENVIRONMENT = 'PRODUCTION_ENVIRONMENT';
@@ -16,12 +16,52 @@ const STAGING_KEY_PREFIX = 'REBUILD_STAGING_';
 const PRODUCTION_KEY_PREFIX = 'REBUILD_PRODUCTION_';
 const ALL_ENVIRONMENTS_KEY_PREFIX = 'REBUILD_';
 
+const storageEndpoint = new aws.Endpoint(STORAGE_ENDPOINT);
+const s3 = new aws.S3({ endpoint: storageEndpoint });
+
+const tools = new Toolkit();
+const octokit = tools.createOctokit();
+
 async function installModules() {
   console.log('Installing modules');
 
   childProcess.execSync('npm install', {
     cwd: GITHUB_WORKSPACE,
   });
+}
+
+async function uploadArtifactToS3(environment) {
+  console.log('- Uploading files to S3');
+  const { context: { sha }, payload: { repository: { name } } } = tools;
+
+  const environmentName = environment === STAGING_ENVIRONMENT ? 'staging' : 'prod';
+  const bucketName = `${name}-${sha}-${environmentName}`;
+
+  const buildDirectory = path.join(GITHUB_WORKSPACE, '/build');
+
+  function walkDirectory(directory) {
+    fs.readdirSync(directory).forEach(async (name) => {
+      const filePath = path.join(directory, name);
+      const stat = fs.statSync(filePath);
+
+      if (stat.isFile()) {
+        const params = {
+          Bucket: bucketName,
+          Key: filePath,
+          Body: fs.readFileSync(filePath),
+          ACL: 'public-read',
+        };
+
+        await s3.putObject(pageUploadParams).promise();
+      } else if (stat.isDirectory()) {
+        walkDirectory(filePath);
+      }
+    });
+  }
+
+  walkDirectory(buildDirectory);
+
+  return `${bucketName}.${STORAGE_ENDPOINT}`;
 }
 
 async function build(environment) {
@@ -68,7 +108,7 @@ async function build(environment) {
     cwd: GITHUB_WORKSPACE,
   });
 
-  return 'google.com';
+  return uploadArtifactToS3(environment);
 }
 
 async function postComment(comment) {

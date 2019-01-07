@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "actions-toolkit": "0.0.4"
+    "actions-toolkit": "0.0.4",
+    "aws-sdk": "^2.384.0"
   }
 }
