@@ -9,8 +9,11 @@ Set of Github actions to test & deploy SPA's to S3, update Cloudflare K/V (_comi
 A preview of the commands available,
 
 **whoami** [`/rebuild whoami <deployment-link>`]: Used to fetch metadata of a given deployment.
+
 **traceroute** [`/rebuild traceroute <domain>`]: Find the deployment aliased to a given domain.
+
 **alias** [`/rebuild alias <deployment-link> <domain>`]: Point a domain at a deployment.
+
 **promote** [`/rebuild promote`]: Point the production domain at the deployment currently aliased as staging.
 
 # rebuild github actions
