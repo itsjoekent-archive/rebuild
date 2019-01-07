@@ -102,4 +102,6 @@ new Promise((resolve, reject) => {
     const message = `${error.message}\n${error.stack}`;
 
     await updateGithubStatus(TEST_STATUS_COMPLETED, TEST_CONCLUSION_FAILURE, message).catch(console.error);
+
+    process.exit(1);
   });

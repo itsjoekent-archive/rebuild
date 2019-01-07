@@ -95,4 +95,6 @@ new Promise((resolve) => installModules().then(resolve))
     console.error(error);
 
     await postComment(`${error.message}\n${error.stack}`);
+
+    process.exit(1);
   });
