@@ -203,7 +203,7 @@ async function postToSlack(message, color) {
 
   await postComment(githubComment);
 
-  const slackComment = `Build completed.\n*Staging* ${stagingUrl}\n*Production*${stagingUrl}`;
+  const slackComment = `Build completed.\n*Staging* ${stagingUrl}\n*Production* ${stagingUrl}`;
   await postToSlack(slackComment, '#01FF70');
 })().catch(async (error) => {
   console.error(error);
