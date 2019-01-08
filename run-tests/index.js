@@ -117,7 +117,7 @@ async function postToSlack(message, color) {
 
   const branch = ref.split('/')[ref.split('/').length - 1];
 
-  const title = `[run-tests] activated on ${repoName}:${branch} by ${githubUserName}`;
+  const title = `[run-tests] on ${repoName}:${branch} by ${githubUserName}`;
 
   const attachment = {
     title,
