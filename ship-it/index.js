@@ -201,7 +201,7 @@ async function postToSlack(message, color) {
 
   const githubComment = `## Deployments\n[Staging](${stagingUrl})\n[Production](${productionUrl})`;
 
-  await postComment(comment);
+  await postComment(githubComment);
 
   const slackComment = `Build completed.\n*Staging* ${stagingUrl}\n*Production*${stagingUrl}`;
   await postToSlack(slackComment, '#01FF70');
