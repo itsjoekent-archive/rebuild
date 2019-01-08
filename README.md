@@ -1,22 +1,8 @@
 # rebuild
 
-_Rebuild the single-page app CI/CD experience!_
+_Rebuild the single-page app & serverless CI/CD experience!_
 
-Set of Github actions to test & deploy SPA's to S3, update Cloudflare K/V (_coming soon_) storage and post Slack notifications (_coming soon_). Also contains an AWS Lambda function for retrieving metadata of a deployment through a Slack command (_coming soon_) and a slack command for aliasing a deployment with a domain (_coming soon_).
-
-# rebuild slack commands (coming soon!)
-
-A preview of the commands available,
-
-**whoami** [`/rebuild whoami <deployment-link>`]: Used to fetch metadata of a given deployment.
-
-**traceroute** [`/rebuild traceroute <domain>`]: Find the deployment aliased to a given domain.
-
-**alias** [`/rebuild alias <deployment-link> <domain>`]: Point a domain at a deployment.
-
-**promote** [`/rebuild promote`]: Point the production domain at the deployment currently aliased as staging.
-
-# rebuild github actions
+Set of Github actions to test & deploy SPA's & Lambda functions to S3 storage. Includes slack notifications for all build & test runs.
 
 Drop these Github actions into any SPA repositories workflow to get started. If you're starting a new repository, create a workflow file at the following path in your project `.github/main.workflow`
 
@@ -72,7 +58,6 @@ The following secrets are required after applying your workflow,
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `INCOMING_SLACK` _Optional_ (Incoming Webhook URL for a Slack application)
-- (_SOON_) `BUILD_DOMAIN`
 
 Additionally, any environment variables with the following naming prefixes will be written to an `.env` file before the build process for each environment.
 
