@@ -4,6 +4,8 @@ _Rebuild the single-page app & serverless CI/CD experience!_
 
 Set of Github actions to test & deploy SPA's & Lambda functions to S3 storage. Includes slack notifications for all build & test runs.
 
+![Slack experience](.github/slack-spa.png)
+
 Drop these Github actions into any SPA repositories workflow to get started. If you're starting a new repository, create a workflow file at the following path in your project `.github/main.workflow`
 
 ## run-tests
