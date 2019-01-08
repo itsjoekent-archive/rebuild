@@ -2,7 +2,7 @@
 
 _Rebuild the single-page app & serverless CI/CD experience!_
 
-Set of Github actions to test & deploy SPA's & Lambda functions to S3 storage. Includes slack notifications for all build & test runs.
+Set of Github actions to test & deploy SPA's to S3 storage, Lambda functions & Cloudflare workers. Includes slack notifications for all build & test runs.
 
 ![Slack experience](.github/slack-spa.png)
 
