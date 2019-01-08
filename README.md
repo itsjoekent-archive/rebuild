@@ -34,7 +34,7 @@ Additionally, any environment variables configured in your workflow with the `RE
 
 ## ship-it
 
-Creates a "deployment" for every commit for staging and production environments. Deployments are identified by the repository name and commit hash. Links to deployments for both environments are placed in the pull request and posted to Slack.
+Creates a single page app deployment for every commit against staging and production environments. Deployments are identified by the repository name and commit hash. Links to deployments for both environments are placed in the pull request and posted to Slack.
 
 The 'ship-it' action checks if you have a `ci:build` command defined in your `package.json` and expects that your build process places the resulting distribution in a `build` folder in the project root.
 
