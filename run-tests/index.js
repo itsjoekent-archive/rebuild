@@ -141,6 +141,22 @@ async function postToSlack(message, color) {
 }
 
 (async () => {
+  const {
+    context: {
+      payload: {
+        created,
+        deleted,
+      },
+    },
+  } = tools;
+
+  if (created || deleted) {
+    console.log('Branch push, terminating early.');
+    process.exit(0);
+
+    return;
+  }
+
   await updateGithubStatus(TEST_STATUS_IN_PROGRESS);
   await postToSlack(`Test suite started.`, '#FFDC00');
   await installModules();
