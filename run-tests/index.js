@@ -144,14 +144,13 @@ async function postToSlack(message, color) {
   const {
     context: {
       payload: {
-        created,
         deleted,
       },
     },
   } = tools;
 
-  if (created || deleted) {
-    console.log('Branch push, terminating early.');
+  if (deleted) {
+    console.log('Branch delete, terminating early.');
     process.exit(0);
 
     return;
