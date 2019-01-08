@@ -99,8 +99,6 @@ async function postToSlack(message, color) {
     return;
   }
 
-  const { number } = tools.context.issue();
-
   const {
     context: {
       sha,
@@ -117,11 +115,10 @@ async function postToSlack(message, color) {
   } = tools;
 
   const title = `${repoName} run-tests triggered by ${githubUserName}`;
-  const link = number ? `${repoUrl}/pulls/${number}` : `${repoUrl}/commit/${sha}`;
 
   const attachment = {
     title,
-    text: `${message}\n${link}`,
+    text: `${message}`,
   };
 
   if (color) {
