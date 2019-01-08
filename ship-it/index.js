@@ -3,9 +3,11 @@ const { promises: fsp } = fs;
 const path = require('path');
 const childProcess = require('child_process');
 
+const request = require('request-promise-native');
 const aws = require('aws-sdk');
 const { Toolkit } = require('actions-toolkit');
 
+const INCOMING_SLACK = process.env.INCOMING_SLACK;
 const GITHUB_WORKSPACE = process.env.GITHUB_WORKSPACE;
 const BUILD_DOMAIN = process.env.BUILD_DOMAIN;
 const STORAGE_ENDPOINT = process.env.STORAGE_ENDPOINT;
@@ -128,19 +130,88 @@ async function postComment(comment) {
   octokit.repos.createCommitComment(params);
 }
 
-new Promise((resolve) => installModules().then(resolve))
-  .then(async () => {
-    const stagingUrl = await build(STAGING_ENVIRONMENT);
-    const productionUrl = await build(PRODUCTION_ENVIRONMENT);
+async function postToSlack(message, color) {
+  if (! INCOMING_SLACK) {
+    return;
+  }
 
-    const comment = `## Deployments\n[Staging](${stagingUrl})\n[Production](${productionUrl})`;
+  const {
+    context: {
+      sha,
+      payload: {
+        ref,
+        repository: {
+          full_name: repoName,
+          html_url: repoUrl,
+        },
+        pusher: {
+          name: githubUserName,
+        },
+      },
+    },
+  } = tools;
 
-    await postComment(comment);
-  })
-  .catch(async (error) => {
-    console.error(error);
+  const branch = ref.split('/')[ref.split('/').length - 1];
 
-    await postComment(`${error.message}\n${error.stack}`);
+  const title = `[ship-it] activated on ${repoName}:${branch} by ${githubUserName}`;
 
-    process.exit(1);
+  const attachment = {
+    title,
+    text: `${message}`,
+  };
+
+  if (color) {
+    attachment.color = color;
+  }
+
+  const payload = {
+    attachments: [attachment],
+  };
+
+  await request({
+    uri: INCOMING_SLACK,
+    method: 'POST',
+    body: payload,
+    json: true,
   });
+}
+
+(async () => {
+  const {
+    context: {
+      payload: {
+        deleted,
+      },
+    },
+  } = tools;
+
+  if (deleted) {
+    console.log('Branch delete, terminating early.');
+    process.exit(0);
+
+    return;
+  }
+
+  await postToSlack(`Starting build.`, '#FFDC00');
+
+  await installModules();
+
+  const stagingUrl = await build(STAGING_ENVIRONMENT);
+  const productionUrl = await build(PRODUCTION_ENVIRONMENT);
+
+  const githubComment = `## Deployments\n[Staging](${stagingUrl})\n[Production](${productionUrl})`;
+
+  await postComment(comment);
+
+  const slackComment = `Build completed.\n*Staging* ${stagingUrl}\n*Production*${stagingUrl}`;
+  await postToSlack(slackComment, '#01FF70');
+})().catch(async (error) => {
+  console.error(error);
+
+  const message = `${error.message}\n${error.stack}`;
+
+  await postComment(`${error.message}\n${error.stack}`).catch(console.error);
+  await postToSlack('Build failed.', '#FF4136').catch(console.error);
+
+  process.exit(1);
+});

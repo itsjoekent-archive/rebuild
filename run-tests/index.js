@@ -103,6 +103,7 @@ async function postToSlack(message, color) {
     context: {
       sha,
       payload: {
+        ref,
         repository: {
           full_name: repoName,
           html_url: repoUrl,
@@ -114,7 +115,9 @@ async function postToSlack(message, color) {
     },
   } = tools;
 
-  const title = `${repoName} run-tests triggered by ${githubUserName}`;
+  const branch = ref.split('/')[ref.split('/').length - 1];
+
+  const title = `[run-tests] activated on ${repoName}:${branch} by ${githubUserName}`;
 
   const attachment = {
     title,
