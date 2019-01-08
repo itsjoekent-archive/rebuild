@@ -210,7 +210,7 @@ async function postToSlack(message, color) {
 
   const message = `${error.message}\n${error.stack}`;
 
-  await postComment(`${error.message}\n${error.stack}`).catch(console.error);
+  await postComment(`**[ship-it]**\n${error.message}\n${error.stack}`).catch(console.error);
   await postToSlack('Build failed.', '#FF4136').catch(console.error);
 
   process.exit(1);
