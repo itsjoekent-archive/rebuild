@@ -2,7 +2,7 @@
 
 _Rebuild the single-page app & serverless CI/CD experience!_
 
-Set of Github actions to deploy SPA's to S3 storage, Lambda functions & Cloudflare workers, and run tests against JS projects. Includes slack notifications for all build & test runs.
+Set of Github actions to deploy SPA's to S3 storage, Lambda functions, and run tests against JS projects. Includes slack notifications for all build & test runs.
 
 ![Slack experience](.github/slack-spa.png)
 
@@ -67,13 +67,9 @@ Additionally, any environment variables with the following naming prefixes will 
 - `REBUILD_STAGING_${YOUR_KEY_HERE}`. Applies to staging builds only.
 - `REBUILD_PRODUCTION_${YOUR_KEY_HERE}`. Applies to production builds only.
 
-## serve-it
+## serverless-deploy
 
-Creates a serverless deployment for either AWS Lambda of Cloudflare Workers. If deploying to AWS, the 'serve-it' action will install modules and package your entire folder to be uploaded to AWS. If deploying to Cloudflare, only your `index.js` file will be uploaded. This is due to the respective platform rules.
-
-For both platforms, your serverless function is deployed automatically whenever a commit is merged or pushed to master.
-
-#### aws workflow
+Creates a serverless deployment for AWS Lambda. (Support mono-repo?)
 
 ```
 workflow "Deploy function" {
@@ -86,9 +82,6 @@ action "Serve It" {
   secrets = [
     "GITHUB_TOKEN",
   ]
-  env = {
-    FUNCTION_PLATFORM = "aws"
-  }
 }
 ```
 
@@ -98,27 +91,3 @@ Additionally the action requires the following secrets,
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_DEFAULT_REGION`
 - `AWS_LAMBDA_NAME`
-
-#### cloudflare workflow
-
-```
-workflow "Deploy function" {
-  on = "push"
-  resolves = ["Serve It"]
-}
-
-action "Serve It" {
-  uses = "itsjoekent/rebuild/serve-it@master"
-  secrets = [
-    "GITHUB_TOKEN",
-  ]
-  env = {
-    FUNCTION_PLATFORM = "cloudflare"
-  }
-}
-```
-
-Additionally the action requires the following secrets,
-
-- `CF_EMAIL`
-- `CF_AUTH_KEY`

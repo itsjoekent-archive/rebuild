@@ -33,6 +33,17 @@ async function installModules() {
   });
 }
 
+function getContentType(extension) {
+  if (extension === 'html') return 'text/html';
+  if (extension === 'css') return 'text/css';
+  if (extension === 'js') return 'application/javascript';
+  if (extension === 'json') return 'application/json';
+  if (extension === 'ico') return 'image/x-icon';
+  if (['png', 'jpg', 'gif'].includes(extension)) return `image/${extension}`;
+
+  return 'application/octet-stream';
+}
+
 async function uploadArtifactToS3(environment) {
   console.log('- Uploading files to S3');
   const { context: { sha, payload: { repository: { name } } } } = tools;
@@ -52,12 +63,14 @@ async function uploadArtifactToS3(environment) {
 
       if (stat.isFile()) {
         const key = filePath.replace(`${GITHUB_WORKSPACE}/build/`, '');
+        const contentType = getContentType(name.split('.')[name.split('.').length - 1]);
 
         const params = {
           Bucket: bucketName,
           Key: key,
           Body: fs.readFileSync(filePath),
           ACL: 'public-read',
+          ContentType: contentType,
         };
 
         await s3.putObject(params).promise();
